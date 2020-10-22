@@ -1,0 +1,197 @@
+Dylan Gunn	805112866
+
+1a.
+#include <iostream>
+using namespace std;
+   
+int main()
+{
+    int arr[4] = { 0, 1, 2, 3 };
+    int* ptr = arr;
+
+    *ptr = arr[ 1 ];                // set arr[0] to 1
+    ptr += 1;
+    *ptr = arr[ 0 ] * 10;           // set arr[1] to 10
+    ptr += 1;
+    ptr[0] = arr[ 1 ] * 10;         // set arr[2] to 100
+    ptr[1] = 1000;                  // set arr[3] to 1000
+    ptr += 1;
+        
+    while (ptr >= arr)
+    {
+        cout << *ptr << " ";        // print values
+        ptr--;
+    }
+    cout << endl;
+    return( 0 );
+} 
+
+1b.  Must pass int p by reference, otherwise it just changes p without changing ptr (which is relevant to main).
+#include <iostream>
+using namespace std;
+
+void findLastZero(int arr[], int n, int* & p)
+{
+    p = nullptr;    /// default value if there isn't a 0 in the array at all
+    for (int k = n - 1; k >= 0; k--)
+    {
+        if (arr[k] == 0)      // found an element whose value is 0
+        {
+            p = arr + k;// change the value of p
+             
+             break;           // stop looping and return
+        }
+    }
+
+}                 
+
+int main()
+{
+    int nums[6] = { 10, 20, 0, 40, 30, 50 };
+    int* ptr;
+
+    findLastZero(nums, 6, ptr);
+    if (ptr == nullptr)
+    {
+        cout << "The array doesn't have any zeros inside it." << endl;
+    }
+    else
+    {
+        cout << "The last zero is at address " << ptr <<  endl;
+        cout << "It's at index " << ptr - nums << endl;
+        cout << "The item's value is " << *ptr << " which is zero!" << endl;
+    }
+    return( 0 );
+} 
+
+1c. Because 15 and 20 do not have any variable identifiers, set pointer p to new int to create a variable with an empty identifier and then refer to it with p.
+#include <iostream>
+using namespace std;
+
+void biggest(int value1, int value2, int * resultPtr)
+{
+    if( value1 > value2 )
+    {
+           *resultPtr = value1;
+    }
+    else
+    {
+           *resultPtr = value2;
+    }
+}
+
+int main()
+{
+    int* p = new int;
+    biggest(15, 20, p);
+    cout << "The biggest value is " << *p << endl;
+    return( 0 );
+} 
+
+1d. 
+#include <iostream>
+using namespace std;
+
+// return true if two C strings are equal 
+bool match(const char* str1, const char* str2)
+{
+    const char* ptr1 = str1;
+    const char* ptr2 = str2;
+    
+    bool result = true;
+    while (*ptr1 != '\0'  &&  *ptr2 != '\0')  // zero bytes at ends
+    {
+        if (*ptr1 != *ptr2)  // compare corresponding characters
+        {
+            return (false);
+            break;
+        }
+        ptr1++;
+        ptr2++;
+    } 
+    if (result)
+    {
+        result = (*ptr1 == *ptr2);
+    }
+    return( result );
+}
+
+int main()
+{
+    char a[10] = "pointy";
+    char b[10] = "pointless";
+
+    if (match(a,b))
+    {
+        cout << "They're the same!" << endl;
+    }
+    else
+    {
+        cout << "Nope!" << endl;
+    }
+} 
+
+1e. To fix this all we need to do is make the array into a global variable.  The problem being within the function is that it doesn't exist within the main function, so we fix that by making it available to both functions.
+
+2. 
+	1. string * fp; 					f. declares a pointer variable to point at a variable of type string 
+	2. string fish[ 5 ];				g. declares a five element array of string
+	3. fp = &fish[ 4 ];					a. sets a pointer variable to the last element of an array of five strings 
+	4. *fp = "salmon";					b. sets the string pointed to by a pointer variable to the value "salmon" 
+	5. fp -= 3;							d. moves the pointer fp back three strings in the array it points to
+	6. *(fp + 3) = "salmon";			c. sets the fourth element of an array pointed to by the variable fp to the value "salmon"
+	7. fp[ 0 ] = "salmon";  			b. sets the string pointed to by a pointer variable to the value "salmon"  
+	8. bool b = (fp == fish);			e. initializes a boolean to true if the pointer variable fp points to the string at the start of the fish array, false otherwise
+	9. bool b = (*fp == *(fp + 1));   	h. initializes a boolean to true if fp points to a string whose value matches the string immediately following the string pointed to by fp, false otherwise
+	
+3.
+Starting array: 5, 3, 4, 17, 22, 19.
+int* ptr = minimart(array, & array[2]); takes in values 5 and 4, with 4 being a pass-by-reference.  However, its id in function minimart is b, which is never changed.  Because a(5) is greater than b(4), it returns b, or 4.
+Now we're pointing at array[2] because it had value 4.  From this value, ptr[1] = 9; sets array[3] to 9.
+ptr +=2; brings the pointer to array[4], which is 22. *ptr = -1 changes that variable VALUE to -1, so array[4] = -1.
+At this point, we have: 5 3 4 9 -1 19
+Now it does *(array + 1) = 79, the pointer *array just points at the first value in array.  *(array+1) points at the second, so array[1] or 3.  It sets this value to 79.
+Now we have: 5 79 4 9 -1 19
+we cout diff= (&array[5] - ptr), where &array[5] is just the index value of the 5th, or 5.  It subtracts it by ptr at 4, so 5-4 is 1.
+swap1 does nothing because all it does in its functions is modify local variables a and b to their counterpart's addresses.
+swap2 changes the actual variables of a and b (by doing *a and *b to specify the variable AT the address) to each other.  It took in values array and &array[2].
+array is just the address of array[0], and &array[2] is the second address in the array.
+Then, in swap2 the VALUE of what is at the address of array[0] is swapped with the VALUE of what is at the address of array[2], just swapping the values 5 and 4 themselves.
+We then run through the array, which now looks like: 4 79 5 9 -1 19
+Final output is:
+diff=1
+4
+79
+5
+9
+-1
+19
+
+4.
+#include <iostream>
+using namespace std;
+
+void deleteDigits(char* str)
+{
+    char* ptr = str;
+    while (*ptr != '\0')
+    {
+        ptr++;
+    }
+    ptr--;
+    for (; *ptr != '\0'; ptr--)
+    {
+        if (*ptr >= '0' && *ptr <= '9')
+        {
+            *ptr = *(ptr+1);
+            *(ptr+1) = '\0';
+        }
+    }
+}
+
+int main()
+{
+    char msg[100] = "Happy 2019!";
+    deleteDigits(msg);
+    cout << msg << endl;        // prints:   Happy !
+}
